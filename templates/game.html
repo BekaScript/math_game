@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Basic page setup */
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Main container */
+        .container {
+            width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px #0003;
+            position: relative;
+        }
+
+        /* Text elements */
+        h1 {
+            color: #333;
+        }
+
+        #expression {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Input field */
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100px;
+        }
+
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #007BFF;
+            color: white;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        /* Logout button */
+        .logout-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Feedback messages */
+        #feedback {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        #feedback.correct {
+            color: green;
+        }
+
+        #feedback.wrong {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="location.href='/logout'" class="logout-btn">Logout</button>
+        <h1>Arithmetic Test</h1>
+
+        <p id="questions">Questions: 0</p>
+        <p id="correct_answers">Correct answers: 0</p>
+        <p id="wrong_answers">Wrong answers: 0</p>
+        <p id="expression"></p>
+
+        <input type="text" name="answer" id="answer">
+        <br><br>
+        <button onclick="checkResult()">Submit Answer</button>
+        <button onclick="getNewQuestion()">Next Question</button>
+        <br>
+        <p id="feedback"></p>
+    </div>
+
+    <script>
+        let currentQuestion = '';
+        let questionCount = -1;
+        let correctCount = 0;
+        let wrongCount = 0;
+
+        function getNewQuestion() {
+            fetch('/get_question')
+                .then(response => response.json())
+                .then(data => {
+                    currentQuestion = data.question;
+                    document.getElementById('expression').textContent = currentQuestion;
+                    document.getElementById('answer').value = '';
+                    document.getElementById('feedback').textContent = '';
+                    questionCount++;
+                    document.getElementById('questions').textContent = `Questions: ${questionCount}`;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function checkResult() {
+            const answer = document.getElementById('answer').value.trim();
+            if (!answer) {
+                document.getElementById('feedback').textContent = 'Please enter an answer';
+                document.getElementById('feedback').className = 'wrong';
+                return;
+            }
+
+            fetch(`/check_result?answer=${encodeURIComponent(answer)}&question=${encodeURIComponent(currentQuestion)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('feedback');
+                    if (data.correct) {
+                        feedback.textContent = 'Correct!';
+                        feedback.className = 'correct';
+                        correctCount++;
+                        document.getElementById('correct_answers').textContent = `Correct answers: ${correctCount}`;
+                    } else {
+                        feedback.textContent = 'Wrong answer. Try again!';
+                        feedback.className = 'wrong';
+                        wrongCount++;
+                        document.getElementById('wrong_answers').textContent = `Wrong answers: ${wrongCount}`;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Handle Enter key in answer input
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkResult();
+            }
+        });
+
+        // Start with first question
+        getNewQuestion();
+    </script>
+</body>
+</html>
