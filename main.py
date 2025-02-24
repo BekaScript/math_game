@@ -37,8 +37,11 @@ def entrance():
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
         
         if User.query.filter_by(username=username).first():
             return jsonify({"error": "Username already exists"}), 400
@@ -59,8 +62,11 @@ def login():
         return redirect(url_for('entrance'))
         
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
         
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password_hash, password):

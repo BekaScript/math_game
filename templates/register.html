@@ -100,32 +100,34 @@
     </div>
 
     <script>
-        async function register() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
-
-            try {
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
-                });
-
-                const data = await response.json();
-                
-                if (response.ok) {
-                    window.location.href = '/login';
-                } else {
-                    messageDiv.style.display = 'block';
-                    messageDiv.textContent = data.error;
-                }
-            } catch (error) {
-                messageDiv.style.display = 'block';
-                messageDiv.textContent = 'An error occurred. Please try again.';
+        function register() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                document.getElementById('message').textContent = 'Please fill in all fields';
+                return;
             }
+
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('message').textContent = data.error;
+                } else {
+                    window.location.href = '/login';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('message').textContent = 'An error occurred';
+            });
         }
 
         // Handle Enter key in password input
