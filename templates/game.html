@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* Basic page setup */
         body {
@@ -8,15 +9,16 @@
             background: #f4f4f4;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
         }
 
         /* Main container */
         .container {
-            width: 600px;
+            max-width: 600px;
+            width: 90%;
             margin: 0 auto;
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px #0003;
             position: relative;
@@ -25,37 +27,76 @@
         /* Text elements */
         h1 {
             color: #333;
+            font-size: 1.8em;
+            margin: 10px 0;
         }
 
         #expression {
-            font-size: 24px;
+            font-size: 1.8em;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         /* Input field */
         input {
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            width: 100px;
+            width: 120px;
+            margin: 10px 0;
         }
 
         /* Buttons */
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
             background: #007BFF;
             color: white;
-            margin: 5px;
             cursor: pointer;
+            margin: 5px;
+            min-width: 120px;
+            touch-action: manipulation;
         }
 
         button:hover {
             background: #0056b3;
+        }
+
+        /* Stats display */
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stats span {
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* Feedback messages */
+        #feedback {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .correct {
+            color: #28a745;
+            background: #d4edda;
+        }
+
+        .wrong {
+            color: #dc3545;
+            background: #f8d7da;
         }
 
         /* Logout button */
@@ -70,18 +111,38 @@
             background: #c82333;
         }
 
-        /* Feedback messages */
-        #feedback {
-            font-weight: bold;
-            margin: 10px 0;
-        }
+        /* Responsive adjustments */
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
 
-        #feedback.correct {
-            color: green;
-        }
+            h1 {
+                font-size: 1.5em;
+            }
 
-        #feedback.wrong {
-            color: red;
+            #expression {
+                font-size: 1.5em;
+            }
+
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .stats span {
+                width: 100%;
+                box-sizing: border-box;
+            }
         }
     </style>
 </head>
@@ -90,9 +151,11 @@
         <button onclick="location.href='/logout'" class="logout-btn">Logout</button>
         <h1>Arithmetic Test</h1>
 
-        <p id="questions">Questions: 0</p>
-        <p id="correct_answers">Correct answers: 0</p>
-        <p id="wrong_answers">Wrong answers: 0</p>
+        <div class="stats">
+            <span id="questions">Questions: 0</span>
+            <span id="correct_answers">Correct answers: 0</span>
+            <span id="wrong_answers">Wrong answers: 0</span>
+        </div>
         <p id="expression"></p>
 
         <input type="text" name="answer" id="answer">
